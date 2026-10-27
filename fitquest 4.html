@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f1222">
+  <title>FitQuest — прокачай себя</title>
+  <style>
+:root{
+  --bg:#0f1222;--card:#1a1f3a;--card2:#242b4f;--txt:#eef0ff;--mut:#9aa3d1;
+  --acc:#7c5cff;--acc2:#00d4a6;--gold:#ffb547;--bad:#ff5c7a;--line:#2e3563;
+  --r:18px;
+}
+[data-theme="light"]{
+  --bg:#f2f4ff;--card:#ffffff;--card2:#e8ebff;--txt:#1b1f3b;--mut:#5b6390;--line:#d5daf5;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{min-height:100vh;padding-bottom:84px}
+h2,h3,h4{margin:0 0 10px}
+h2{font-size:20px}h3{font-size:16px}
+p{margin:6px 0}
+.mut{color:var(--mut);font-size:13px}
+.top{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;
+  padding:12px 16px;background:linear-gradient(90deg,var(--card),var(--card2));border-bottom:1px solid var(--line)}
+.brand{font-weight:800;font-size:18px;letter-spacing:.3px}
+.chips{display:flex;gap:8px}
+.chip{background:var(--card2);padding:6px 12px;border-radius:999px;font-weight:700;font-size:14px;border:1px solid var(--line)}
+.chip.gold{color:var(--gold)}
+main{max-width:720px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.row{display:flex;gap:10px;align-items:center}
+.row.wrap{flex-wrap:wrap}
+.grow{flex:1}
+.between{justify-content:space-between}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.grid2{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.center{text-align:center}
+
+/* buttons / inputs */
+button,.btn{font:inherit;border:0;border-radius:12px;padding:10px 14px;background:var(--acc);color:#fff;font-weight:700;cursor:pointer;transition:transform .1s,opacity .2s}
+button:active{transform:scale(.96)}
+button.sec{background:var(--card2);color:var(--txt);border:1px solid var(--line)}
+button.ok{background:var(--acc2);color:#04241d}
+button.bad{background:var(--bad)}
+button.gold{background:var(--gold);color:#3a2600}
+button.sm{padding:6px 10px;font-size:13px;border-radius:10px}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{font:inherit;width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--txt)}
+textarea{min-height:90px;resize:vertical}
+label{display:block;font-size:12px;color:var(--mut);margin:8px 0 4px}
+.chipbtn{padding:6px 12px;border-radius:999px;background:var(--card2);border:1px solid var(--line);color:var(--txt);font-size:13px;font-weight:600}
+.chipbtn.on{background:var(--acc);border-color:var(--acc);color:#fff}
+
+/* hero */
+.hero{display:flex;gap:14px;align-items:center}
+.avatar{width:130px;height:156px;flex:none;border-radius:20px;background:radial-gradient(circle at 50% 30%,var(--card2),var(--bg));
+  border:2px solid var(--acc);display:flex;align-items:flex-end;justify-content:center;overflow:hidden;position:relative}
+.avatar svg,.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar.big{width:180px;height:216px;margin:10px auto}
+.bubble{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:8px 12px;font-size:14px;margin-top:8px;position:relative}
+.bar{height:12px;border-radius:99px;background:var(--card2);overflow:hidden;border:1px solid var(--line)}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:99px;transition:width .5s}
+.bar.gold>i{background:linear-gradient(90deg,var(--gold),#ff7a45)}
+.bar.red>i{background:var(--bad)}
+.lvl{font-size:26px;font-weight:900}
+
+/* quests / lists */
+.item{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item.done{opacity:.55}
+.item.done .t{text-decoration:line-through}
+.chk{width:28px;height:28px;border-radius:9px;border:2px solid var(--acc);flex:none;display:flex;align-items:center;justify-content:center;font-weight:900;background:transparent}
+.done .chk{background:var(--acc2);border-color:var(--acc2);color:#04241d}
+.rew{font-size:12px;color:var(--gold);white-space:nowrap;font-weight:700}
+.tag{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--card2);color:var(--mut);border:1px solid var(--line)}
+
+/* ring */
+.ring{position:relative;width:200px;height:200px;margin:6px auto}
+.ring svg{transform:rotate(-90deg)}
+.ring .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .n{font-size:34px;font-weight:900}
+.bars{display:flex;gap:8px;align-items:flex-end;height:110px;margin-top:10px}
+.bars div{flex:1;text-align:center;font-size:11px;color:var(--mut)}
+.bars b{display:block;background:linear-gradient(var(--acc2),var(--acc));border-radius:8px 8px 0 0;min-height:3px}
+
+/* timer */
+.timer{font-size:64px;font-weight:900;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:2px}
+
+/* ex card */
+.ex{padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card2);margin-bottom:10px}
+.ex .nm{font-weight:800}
+.ex .inp{display:flex;gap:8px;margin-top:8px;align-items:center}
+.ex .inp input{width:70px;text-align:center}
+
+/* shop */
+.shopitem{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center}
+.shopitem .em{font-size:38px}
+.price{color:var(--gold);font-weight:800;margin:6px 0}
+
+/* achievements & chars */
+.ach{padding:10px;border-radius:14px;border:1px solid var(--line);background:var(--card2);text-align:center;font-size:12px}
+.ach.lock{opacity:.4;filter:grayscale(1)}
+.ach .em{font-size:28px}
+.charcard{border:2px solid var(--line);border-radius:16px;background:var(--card2);padding:8px;text-align:center;font-size:12px;cursor:pointer}
+.charcard.on{border-color:var(--acc2)}
+.charcard.lock{opacity:.35;filter:grayscale(1);cursor:default}
+.charcard .avatar{width:100%;height:110px;border-width:1px;border-radius:12px}
+.meal{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);align-items:center}
+.meal img{width:52px;height:52px;border-radius:12px;object-fit:cover}
+.macro{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+.macro b{display:block;font-size:18px}
+
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:var(--card);border-top:1px solid var(--line);
+  padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.nav button{flex:1;background:transparent;color:var(--mut);padding:6px 2px;font-size:10px;font-weight:700;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.nav button span{font-size:20px}
+.nav button.on{color:#fff;background:var(--acc)}
+
+/* toasts / modal */
+#toasts{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;width:min(92vw,420px);pointer-events:none}
+.toast{background:var(--acc2);color:#04241d;font-weight:700;padding:10px 14px;border-radius:12px;box-shadow:0 6px 24px #0006;animation:pop .25s}
+.modal{position:fixed;inset:0;z-index:50;background:#000b;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal.hidden{display:none}
+.modal .box{background:var(--card);border:2px solid var(--acc);border-radius:24px;padding:22px;max-width:380px;width:100%;text-align:center;animation:pop .3s}
+.modal .big{font-size:44px}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+@media(min-width:720px){.nav{max-width:720px;left:50%;transform:translateX(-50%);border-radius:18px 18px 0 0}}
+
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="brand">⚔️ FitQuest</div>
+    <div class="chips">
+      <span class="chip" id="hLvl">Ур. 1</span>
+      <span class="chip gold" id="hCoins">🪙 0</span>
+    </div>
+  </header>
+
+  <main id="view"></main>
+
+  <nav class="nav" id="nav"></nav>
+
+  <div id="toasts"></div>
+  <div id="modal" class="modal hidden"></div>
+
+  <input type="file" id="mealPhoto" accept="image/*" capture="environment" hidden>
+  <input type="file" id="charImg" accept="image/*" hidden>
+  <input type="file" id="importFile" accept="application/json" hidden>
+
+  <script>
+'use strict';
+/* =====================================================================
+   FitQuest — геймифицированный фитнес-трекер.
+   Всё хранится локально в браузере (localStorage).
+   Настройки баланса — в объекте CFG ниже.
+   ===================================================================== */
+const CFG = {
+  xpBase: 30,        // XP до 2-го уровня
+  xpGrow: 0.6,       // на сколько растёт требование каждый уровень
+  maxLevel: 2000,
+  charEvery: 50,     // новый герой каждые N уровней
+  stepXp: 100,       // 1 XP за столько шагов
+  stepCoin: 500,     // 1 монета за столько шагов
+};
+const KEY = 'fitquest_v1';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const pad = n => String(n).padStart(2, '0');
+const dateKey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const num = v => { const n = parseFloat(String(v).replace(',', '.')); return isFinite(n) ? n : 0; };
+const rnd = a => a[Math.floor(Math.random() * a.length)];
+
+/* ---------------------------- состояние ---------------------------- */
+const defaults = () => ({
+  v: 1, name: 'Герой', xp: 0, coins: 0, active: 0, customImg: {}, stepGoal: 8000,
+  goals: { kcal: 2200, p: 130, f: 70, c: 250 },
+  days: {}, meals: [], workouts: [], reading: [], weights: [], notes: {},
+  inventory: {}, customShop: [], quests: {}, ach: {}, lastBonus: '', bought: 0,
+  settings: { theme: 'dark', apiUrl: '' },
+});
+let S = load();
+function load() {
+  try {
+    const r = JSON.parse(localStorage.getItem(KEY));
+    if (!r) return defaults();
+    const d = defaults();
+    return Object.assign(d, r, { settings: Object.assign(d.settings, r.settings || {}), goals: Object.assign(d.goals, r.goals || {}) });
+  } catch (e) { return defaults(); }
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { toast('Память браузера заполнена — удали старые фото еды'); }
+}
+function D(k = dateKey()) {
+  return S.days[k] || (S.days[k] = { steps: 0, sx: 0, sc: 0, water: 0, sleep: 0, read: 0, train: 0, meals: 0, xp: 0 });
+}
+const peek = (k = dateKey()) => S.days[k] || {};
+
+/* ----------------------------- уровни ----------------------------- */
+const need = l => CFG.xpBase + Math.floor(l * CFG.xpGrow);
+function levelInfo(xp) {
+  let l = 1;
+  while (l < CFG.maxLevel && xp >= need(l)) { xp -= need(l); l++; }
+  return { level: l, cur: xp, next: l >= CFG.maxLevel ? 1 : need(l) };
+}
+const unlockedCount = lvl => UNL.filter(u => u <= lvl).length;
+
+/* ---------------------------- персонажи ---------------------------- */
+const HEROES = [
+  ['Рэн', 'Обычный герой'], ['Мира', 'Ученица клинка'], ['Торн', 'Страж тропы'], ['Лиара', 'Бегунья ветра'], ['Дзиро', 'Мастер дыхания'],
+  ['Кай', 'Кузнец силы'], ['Ниро', 'Тень рассвета'], ['Сэра', 'Хранительница света'], ['Брок', 'Каменный кулак'], ['Юна', 'Лунный лучник'],
+  ['Вальд', 'Железный лесник'], ['Иска', 'Стальной шторм'], ['Гром', 'Громовой атлет'], ['Тесса', 'Гибкая молния'], ['Аргус', 'Зоркий воин'],
+  ['Мако', 'Волна прибоя'], ['Зара', 'Пустынный ураган'], ['Орин', 'Горный монах'], ['Фрея', 'Ледяная валькирия'], ['Даро', 'Король марафона'],
+  ['Омега', 'Легенда 2000 уровня'],
+];
+const DEMONS = [
+  ['Гар', 'Обычный демон'], ['Скарн', 'Демон-мародёр'], ['Визг', 'Клыкастый демон'], ['Морок', 'Теневой демон'], ['Кроар', 'Рогатый демон'],
+  ['Шипа', 'Ядовитая демоница'], ['Балор', 'Каменный демон'], ['Нокс', 'Ночной охотник'], ['Вейра', 'Демоница лунной тьмы'], ['Урзак', 'Кровавый демон'],
+  ['Малгрим', 'Старший демон'], ['Ксара', 'Демоница теней'], ['Грим', 'Костяной демон'], ['Леви', 'Демон бурь'], ['Азок', 'Верховный демон'],
+  ['Тарна', 'Демоница льда'], ['Дракс', 'Демон-великан'], ['Некра', 'Королева тьмы'], ['Охр', 'Древний демон'], ['Кайрос', 'Повелитель демонов'],
+];
+// чётные номера — герои, нечётные — демоны; уровни открытия: 1, 10, 25, 50, 75, 100 ... 2000
+const CHARS = Array.from({ length: 41 }, (_, i) => i % 2 === 0 ? HEROES[i / 2] : DEMONS[(i - 1) / 2]);
+const isDemon = i => i % 2 === 1;
+const UNL = Array.from({ length: 41 }, (_, i) => i < 6 ? [1, 10, 25, 50, 75, 100][i] : Math.round((100 + (i - 5) * 1900 / 35) / 5) * 5);
+function charSVG(i) {
+  const dem = isDemon(i);
+  const h = (i * 47 + 20) % 360, h2 = (h + 170) % 360;
+  const skin = dem ? ['#b9a3d9', '#d98a8a', '#8fb3c9', '#9ccf9a', '#c9b08f'][(i >> 1) % 5] : ['#ffe0c7', '#f5c9a1', '#e0a979', '#b57a50', '#8a5a3a'][(i * 3) % 5];
+  const hair = `hsl(${h},65%,${28 + (i * 11) % 32}%)`, hairD = `hsl(${h},65%,${18 + (i * 11) % 25}%)`;
+  const suit = `hsl(${h2},55%,48%)`, suitD = `hsl(${h2},55%,34%)`, trim = `hsl(${(h2 + 50) % 360},85%,68%)`;
+  const st = i % 6, eye = i % 3, acc = (i >> 1) % 5;
+  let back = '', front = '';
+  switch (st) {
+    case 0: front = `<path d="M52 70 L58 30 L72 58 L85 22 L100 55 L115 22 L128 58 L142 30 L148 70 Q100 50 52 70Z" fill="${hair}"/>`; break;
+    case 1: back = `<ellipse cx="100" cy="78" rx="55" ry="52" fill="${hairD}"/>`; front = `<path d="M50 75 Q60 35 100 35 Q140 35 150 75 Q125 55 100 62 Q75 55 50 75Z" fill="${hair}"/>`; break;
+    case 2: back = `<rect x="46" y="55" width="108" height="110" rx="40" fill="${hairD}"/>`; front = `<path d="M48 80 Q55 32 100 32 Q145 32 152 80 Q120 52 100 60 Q80 52 48 80Z" fill="${hair}"/>`; break;
+    case 3: front = `<path d="M90 20 Q100 5 110 20 L112 62 L88 62Z" fill="${hair}"/><path d="M54 74 Q60 52 90 55 L90 66 Q70 60 54 74Z M146 74 Q140 52 110 55 L110 66 Q130 60 146 74Z" fill="${hairD}"/>`; break;
+    case 4: back = `<circle cx="100" cy="22" r="17" fill="${hairD}"/>`; front = `<path d="M50 78 Q55 33 100 33 Q145 33 150 78 Q122 58 100 64 Q78 58 50 78Z" fill="${hair}"/>`; break;
+    default: front = `<path d="M48 82 Q48 30 100 30 Q152 30 152 82 L140 66 Q100 48 60 66Z" fill="${hair}"/>`;
+  }
+  const eyes = eye === 0
+    ? `<ellipse cx="82" cy="92" rx="7" ry="9" fill="#fff"/><ellipse cx="118" cy="92" rx="7" ry="9" fill="#fff"/><circle cx="83" cy="94" r="5" fill="#222"/><circle cx="117" cy="94" r="5" fill="#222"/><circle cx="85" cy="91" r="1.8" fill="#fff"/><circle cx="119" cy="91" r="1.8" fill="#fff"/>`
+    : eye === 1
+      ? `<path d="M73 86 L91 90 M127 86 L109 90" stroke="#222" stroke-width="3" stroke-linecap="round"/><circle cx="83" cy="95" r="5" fill="#222"/><circle cx="117" cy="95" r="5" fill="#222"/>`
+      : `<path d="M74 95 Q82 85 90 95 M110 95 Q118 85 126 95" stroke="#222" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  let accs = '';
+  if (acc === 1) accs = `<rect x="54" y="62" width="92" height="9" rx="4" fill="${trim}"/>`;
+  if (acc === 2) accs = `<g fill="none" stroke="#222" stroke-width="2.5"><circle cx="82" cy="93" r="12"/><circle cx="118" cy="93" r="12"/><path d="M94 93 H106"/></g>`;
+  if (acc === 3) accs = `<path d="M124 100 L136 116" stroke="#c0392b" stroke-width="3" stroke-linecap="round"/>`;
+  const demEyes = `<ellipse cx="82" cy="92" rx="8" ry="9" fill="#ffe14d"/><ellipse cx="118" cy="92" rx="8" ry="9" fill="#ffe14d"/><rect x="80.8" y="83" width="2.6" height="17" rx="1.3" fill="#2a0a0a"/><rect x="116.8" y="83" width="2.6" height="17" rx="1.3" fill="#2a0a0a"/><path d="M71 81 L92 88 M129 81 L108 88" stroke="#2a0a0a" stroke-width="4" stroke-linecap="round"/><path d="M66 102 L75 106 M134 102 L125 106" stroke="#5b2a7a" stroke-width="3" stroke-linecap="round"/>`;
+  const horns = `<path d="M64 54 Q48 24 66 6 Q64 34 80 46Z" fill="#f1ead8" stroke="#8a7a55" stroke-width="1.5"/><path d="M136 54 Q152 24 134 6 Q136 34 120 46Z" fill="#f1ead8" stroke="#8a7a55" stroke-width="1.5"/>${i >= 21 ? '<path d="M52 66 Q30 52 34 34 Q46 52 60 58Z" fill="#f1ead8" stroke="#8a7a55" stroke-width="1.5"/><path d="M148 66 Q170 52 166 34 Q154 52 140 58Z" fill="#f1ead8" stroke="#8a7a55" stroke-width="1.5"/>' : ''}`;
+  const fangs = `<path d="M91 113 L95 123 L99 114Z M101 114 L105 123 L109 113Z" fill="#fff" stroke="#8a2b2b" stroke-width="1"/>`;
+  const cape = acc === 4 ? `<path d="M62 134 L36 218 L164 218 L138 134Z" fill="${trim}" opacity=".9"/>` : '';
+  return `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+    ${cape}${back}
+    <rect x="74" y="196" width="20" height="34" rx="8" fill="${suitD}"/><rect x="106" y="196" width="20" height="34" rx="8" fill="${suitD}"/>
+    <rect x="70" y="224" width="28" height="12" rx="6" fill="#222"/><rect x="102" y="224" width="28" height="12" rx="6" fill="#222"/>
+    <rect x="64" y="130" width="72" height="72" rx="22" fill="${suit}"/>
+    <rect x="64" y="176" width="72" height="9" fill="${trim}"/>
+    <path d="M100 132 L100 176" stroke="${suitD}" stroke-width="3"/>
+    <rect x="42" y="136" width="24" height="52" rx="12" fill="${suit}"/><rect x="134" y="136" width="24" height="52" rx="12" fill="${suit}"/>
+    <circle cx="54" cy="192" r="11" fill="${skin}"/><circle cx="146" cy="192" r="11" fill="${skin}"/>
+    <g transform="translate(26 196)"><rect y="6" width="56" height="5" rx="2" fill="#aaa"/><rect width="9" height="17" rx="3" fill="#444"/><rect x="47" width="9" height="17" rx="3" fill="#444"/></g>
+    <rect x="90" y="122" width="20" height="16" fill="${skin}"/>
+    <circle cx="100" cy="88" r="44" fill="${skin}"/>
+    ${front}${dem ? demEyes : eyes}${accs}${dem ? horns : ''}
+    <ellipse cx="70" cy="108" rx="7" ry="4" fill="#ff8aa0" opacity=".45"/><ellipse cx="130" cy="108" rx="7" ry="4" fill="#ff8aa0" opacity=".45"/>
+    <path d="M88 112 Q100 124 112 112" stroke="#8a2b2b" stroke-width="3" fill="none" stroke-linecap="round"/>${dem ? fangs : ''}
+  </svg>`;
+}
+const charImg = i => S.customImg[i] ? `<img src="${S.customImg[i]}" alt="">` : charSVG(i);
+const PHRASES = {
+  idle: ['Готов к новым подвигам!', 'Сегодня будет отличный день!', 'Каждый шаг делает нас сильнее.', 'Не останавливайся!', 'Железо не поднимет само себя 💪'],
+  low: ['Давай начнём с малого — хотя бы 10 приседаний!', 'Разминка — и дело пойдёт.', 'Первый шаг самый важный!'],
+  mid: ['Отлично идём! Ещё чуть-чуть.', 'Квесты сами себя не закроют 😉', 'Ты в ритме!'],
+  high: ['Ты машина! 🔥', 'Сегодня ты на высоте!', 'Легенда в процессе создания!'],
+};
+
+/* ------------------------------- XP --------------------------------- */
+function gain(xp, coins = 0, why = '', quiet = false) {
+  const before = levelInfo(S.xp).level;
+  S.xp += xp; S.coins += coins; D().xp += xp;
+  const after = levelInfo(S.xp).level;
+  if (!quiet && (xp || coins)) toast(`+${xp} XP${coins ? ` · +${coins} 🪙` : ''}${why ? ' — ' + why : ''}`);
+  if (after > before) {
+    let newChar = null;
+    for (let l = before + 1; l <= after; l++) { const ni = UNL.indexOf(l); if (ni > 0) newChar = ni; }
+    levelUp(after, newChar);
+  }
+  save(); render();
+}
+function levelUp(lvl, ch) {
+  const box = ch != null
+    ? `<div class="big">🎊</div><h2>Уровень ${lvl}!</h2><p>Открыт новый персонаж:</p><div class="avatar big">${charImg(ch)}</div><h3>${esc(CHARS[ch][0])} — ${esc(CHARS[ch][1])}</h3>`
+    : `<div class="big">⬆️</div><h2>Уровень ${lvl}!</h2><p class="mut">${UNL.find(u => u > lvl) ? 'Следующий персонаж на уровне ' + UNL.find(u => u > lvl) : 'Ты прошёл всех!'}</p>`;
+  modal(box);
+}
+function modal(html) {
+  const m = $('#modal'); m.innerHTML = `<div class="box">${html}<br><button data-act="close">Круто!</button></div>`; m.classList.remove('hidden');
+}
+function toast(t) {
+  const el = document.createElement('div'); el.className = 'toast'; el.textContent = t; $('#toasts').appendChild(el);
+  setTimeout(() => el.remove(), 2600);
+}
+function beep() {
+  try {
+    const c = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.25, 0.5].forEach(t => { const o = c.createOscillator(), g = c.createGain(); o.connect(g); g.connect(c.destination); o.frequency.value = 880; g.gain.value = 0.2; o.start(c.currentTime + t); o.stop(c.currentTime + t + 0.15); });
+    navigator.vibrate && navigator.vibrate([200, 100, 200]);
+  } catch (e) { }
+}
+
+/* ------------------------------ квесты ------------------------------ */
+const metric = {
+  steps: k => peek(k).steps || 0, read: k => peek(k).read || 0, water: k => peek(k).water || 0,
+  train: k => peek(k).train || 0, meal: k => peek(k).meals || 0, note: k => (S.notes[k] || '').length ? 1 : 0, sleep: k => peek(k).sleep || 0,
+};
+const QUESTS = [
+  ['Отжимания: 3 подхода по 15', 30, 5], ['Приседания: 4 × 20', 30, 5], ['Планка — 1 минута', 20, 3], ['Подтягивания: 3 × 8', 35, 6],
+  ['Сгибания на бицепс с гантелями 3 × 12', 30, 5], ['Жим гантелей лёжа 3 × 10', 35, 6], ['Тяга гантели в наклоне 3 × 12', 35, 6],
+  ['Румынская тяга с гантелями 3 × 12', 35, 6], ['Жим гантелей над головой 3 × 10', 35, 6], ['Выпады с гантелями 3 × 10 на ногу', 35, 6],
+  ['Махи гантелями в стороны 3 × 12', 25, 4], ['Пресс: 3 × 20 скручиваний', 25, 4], ['Бёрпи — 30 штук', 40, 7], ['Прыжки на скакалке — 5 минут', 30, 5],
+  ['Растяжка — 10 минут', 20, 3], ['Утренняя зарядка — 5 минут', 15, 2], ['Холодный душ', 20, 4], ['Без сладкого весь день', 30, 5],
+  ['Лечь спать до 23:00', 25, 4], ['Прогулка на свежем воздухе — 20 минут', 20, 3], ['Медитация — 5 минут', 15, 2], ['Убраться дома — 10 минут', 15, 2],
+  ['Выучить 5 новых слов', 20, 3], ['Съесть порцию овощей', 15, 2], ['Без телефона за час до сна', 25, 4], ['Подняться по лестнице пешком', 10, 1],
+  ['Позвонить близким', 15, 3], ['Приготовить полезный обед', 25, 4],
+  ['Пройти 5 000 шагов', 30, 5, { k: 'steps', v: 5000 }], ['Пройти 10 000 шагов', 60, 10, { k: 'steps', v: 10000 }],
+  ['Читать 25 минут', 40, 6, { k: 'read', v: 25 }], ['Выпить 8 стаканов воды', 30, 5, { k: 'water', v: 8 }],
+  ['Записать приём пищи', 15, 2, { k: 'meal', v: 1 }], ['Записать 3 приёма пищи', 30, 5, { k: 'meal', v: 3 }],
+  ['Выполнить 3 упражнения в приложении', 30, 5, { k: 'train', v: 3 }], ['Выполнить 6 упражнений в приложении', 60, 10, { k: 'train', v: 6 }],
+  ['Написать заметку дня', 15, 2, { k: 'note', v: 1 }], ['Поспать 7+ часов', 30, 5, { k: 'sleep', v: 7 }],
+].map((q, i) => ({ id: i, t: q[0], xp: q[1], c: q[2], auto: q[3] }));
+function seeded(str) { let h = 1779033703 ^ str.length; for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; } return () => { h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; }; }
+function todayQuests(k = dateKey()) {
+  const r = seeded(k), manual = QUESTS.filter(q => !q.auto), auto = QUESTS.filter(q => q.auto);
+  const sh = a => a.map(x => [r(), x]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+  return [...sh(auto).slice(0, 3), ...sh(manual).slice(0, 4)];
+}
+function checkAuto() {
+  const k = dateKey(); S.quests[k] = S.quests[k] || {};
+  todayQuests(k).forEach(q => {
+    if (q.auto && !S.quests[k][q.id] && metric[q.auto.k](k) >= q.auto.v) { S.quests[k][q.id] = 1; gain(q.xp, q.c, 'квест: ' + q.t); }
+  });
+}
+
+/* --------------------------- упражнения --------------------------- */
+const EXR = [
+  ['Отжимания', 'Грудь', 'Свой вес', 3, 15, 6], ['Узкие отжимания', 'Грудь', 'Свой вес', 3, 12, 6], ['Жим гантелей лёжа', 'Грудь', 'Гантели', 3, 10, 8],
+  ['Разводка гантелей лёжа', 'Грудь', 'Гантели', 3, 12, 7], ['Пуловер с гантелью', 'Грудь', 'Гантели', 3, 12, 7],
+  ['Тяга гантели в наклоне', 'Спина', 'Гантели', 3, 12, 8], ['Тяга двух гантелей', 'Спина', 'Гантели', 3, 12, 8], ['Подтягивания', 'Спина', 'Свой вес', 3, 8, 10],
+  ['Супермен', 'Спина', 'Свой вес', 3, 15, 5], ['Шраги с гантелями', 'Спина', 'Гантели', 3, 15, 6],
+  ['Приседания', 'Ноги', 'Свой вес', 4, 20, 5], ['Гоблет-приседания', 'Ноги', 'Гантели', 3, 12, 8], ['Выпады', 'Ноги', 'Свой вес', 3, 12, 6],
+  ['Выпады с гантелями', 'Ноги', 'Гантели', 3, 10, 8], ['Румынская тяга с гантелями', 'Ноги', 'Гантели', 3, 12, 9], ['Ягодичный мостик', 'Ноги', 'Свой вес', 3, 15, 5],
+  ['Подъём на носки', 'Ноги', 'Свой вес', 4, 20, 4], ['Болгарские выпады', 'Ноги', 'Гантели', 3, 10, 8], ['Прыжки в приседе', 'Ноги', 'Свой вес', 3, 15, 6],
+  ['Жим гантелей сидя', 'Плечи', 'Гантели', 3, 10, 8], ['Махи гантелями в стороны', 'Плечи', 'Гантели', 3, 12, 7], ['Махи в наклоне', 'Плечи', 'Гантели', 3, 12, 7],
+  ['Подъём гантелей перед собой', 'Плечи', 'Гантели', 3, 12, 6], ['Жим Арнольда', 'Плечи', 'Гантели', 3, 10, 9], ['Отжимания пайк', 'Плечи', 'Свой вес', 3, 10, 8],
+  ['Сгибания на бицепс', 'Руки', 'Гантели', 3, 12, 6], ['Молотковые сгибания', 'Руки', 'Гантели', 3, 12, 6], ['Концентрированный подъём', 'Руки', 'Гантели', 3, 10, 6],
+  ['Французский жим с гантелью', 'Руки', 'Гантели', 3, 12, 7], ['Разгибания в наклоне', 'Руки', 'Гантели', 3, 12, 6], ['Обратные отжимания от стула', 'Руки', 'Свой вес', 3, 12, 7],
+  ['Алмазные отжимания', 'Руки', 'Свой вес', 3, 10, 8],
+  ['Скручивания', 'Пресс', 'Свой вес', 3, 20, 4], ['Планка', 'Пресс', 'Свой вес', 3, 45, 5], ['Подъём ног лёжа', 'Пресс', 'Свой вес', 3, 15, 5],
+  ['Велосипед', 'Пресс', 'Свой вес', 3, 30, 4], ['Русские скручивания с гантелью', 'Пресс', 'Гантели', 3, 20, 5], ['Альпинист', 'Пресс', 'Свой вес', 3, 30, 5],
+  ['Боковая планка', 'Пресс', 'Свой вес', 3, 30, 5],
+  ['Бёрпи', 'Кардио', 'Свой вес', 3, 10, 10], ['Прыжки Джек', 'Кардио', 'Свой вес', 3, 40, 4], ['Скакалка', 'Кардио', 'Свой вес', 3, 60, 4],
+  ['Бег на месте', 'Кардио', 'Свой вес', 3, 60, 3], ['Высокие колени', 'Кардио', 'Свой вес', 3, 40, 4], ['Мах гантелью (свинг)', 'Кардио', 'Гантели', 3, 15, 9],
+  ['Наклоны к ногам', 'Растяжка', 'Свой вес', 2, 30, 2], ['Поза кобры', 'Растяжка', 'Свой вес', 2, 30, 2], ['Поза ребёнка', 'Растяжка', 'Свой вес', 2, 40, 2],
+  ['Растяжка бёдер', 'Растяжка', 'Свой вес', 2, 30, 2], ['Кошка-корова', 'Растяжка', 'Свой вес', 2, 12, 2], ['Вращения плечами', 'Растяжка', 'Свой вес', 2, 15, 2],
+].map((e, i) => ({ id: i, n: e[0], g: e[1], eq: e[2], sets: e[3], reps: e[4], xp: e[5], unit: /Планка|Скакалка|Бег|колени|Наклоны|Поза|Растяжка/.test(e[0]) ? 'сек' : 'повт' }));
+const exByName = n => EXR.find(e => e.n === n);
+const PROGRAMS = [
+  ['💪 Гантели: всё тело', ['Жим гантелей лёжа', 'Тяга гантели в наклоне', 'Гоблет-приседания', 'Жим гантелей сидя', 'Сгибания на бицепс', 'Французский жим с гантелью']],
+  ['🏠 Дом: свой вес', ['Отжимания', 'Приседания', 'Выпады', 'Планка', 'Ягодичный мостик', 'Скручивания']],
+  ['🔥 Пресс-блиц', ['Скручивания', 'Подъём ног лёжа', 'Велосипед', 'Альпинист', 'Планка', 'Боковая планка']],
+  ['⚡ Кардио-взрыв', ['Бёрпи', 'Прыжки Джек', 'Высокие колени', 'Скакалка', 'Прыжки в приседе']],
+  ['🧘 Растяжка', ['Наклоны к ногам', 'Поза кобры', 'Поза ребёнка', 'Растяжка бёдер', 'Кошка-корова', 'Вращения плечами']],
+];
+
+/* ------------------------------ еда ------------------------------ */
+// на 100 г: [ккал, белки, жиры, углеводы] — приблизительные справочные значения
+const FOOD = {
+  'Куриная грудка варёная': [165, 31, 3.6, 0], 'Рис варёный': [130, 2.7, 0.3, 28], 'Гречка варёная': [110, 4, 1, 21], 'Овсянка на воде': [88, 3, 1.7, 15],
+  'Яйцо варёное': [155, 13, 11, 1], 'Творог 5%': [121, 17, 5, 1.8], 'Банан': [89, 1.1, 0.3, 23], 'Яблоко': [52, 0.3, 0.2, 14], 'Хлеб': [250, 8, 3, 49],
+  'Макароны варёные': [158, 5.8, 0.9, 31], 'Картофель варёный': [82, 2, 0.4, 17], 'Говядина варёная': [254, 25, 17, 0], 'Лосось': [208, 20, 13, 0],
+  'Тунец консервированный': [116, 26, 1, 0], 'Молоко 2.5%': [52, 2.8, 2.5, 4.7], 'Кефир 2.5%': [53, 3, 2.5, 4], 'Йогурт греческий': [97, 9, 5, 4],
+  'Сыр твёрдый': [350, 26, 27, 0], 'Миндаль': [579, 21, 50, 22], 'Арахисовая паста': [588, 25, 50, 20], 'Тёмный шоколад': [546, 6, 31, 60],
+  'Протеиновый батончик': [350, 30, 12, 35], 'Огурец': [15, 0.8, 0.1, 3], 'Помидор': [18, 0.9, 0.2, 3.9], 'Брокколи': [34, 2.8, 0.4, 7],
+  'Авокадо': [160, 2, 15, 9], 'Оливковое масло': [884, 0, 100, 0], 'Пицца': [266, 11, 10, 33], 'Бургер': [295, 17, 14, 24], 'Картофель фри': [312, 3.4, 15, 41],
+  'Мороженое': [207, 3.5, 11, 24], 'Апельсиновый сок': [45, 0.7, 0.2, 10], 'Кола': [42, 0, 0, 10.6], 'Борщ': [49, 2, 2, 5.5], 'Пельмени': [275, 12, 12, 29],
+  'Блины': [233, 6, 12, 26], 'Сосиска': [266, 11, 24, 2], 'Гранола': [450, 10, 18, 62], 'Протеиновый коктейль': [120, 24, 2, 4],
+};
+
+/* ------------------------------ магазин ------------------------------ */
+const SHOP = [
+  ['🍫', 'Батончик', 50], ['📺', 'Серия любимого сериала', 120], ['🎬', 'Фильм вечером', 300], ['🎮', 'Час игр', 150],
+  ['🍕', 'Кусок пиццы', 180], ['🍦', 'Мороженое', 100], ['☕', 'Кофе в кофейне', 90], ['🛌', 'Лишние 30 минут сна', 80],
+  ['🧋', 'Бабл-ти / десерт', 140], ['🎧', 'Час музыки без дел', 60], ['🏖️', 'Выходной от тренировки', 500], ['🎁', 'Подарок себе (до 1000 ₽)', 1500],
+].map((x, i) => ({ id: 'd' + i, em: x[0], n: x[1], p: x[2] }));
+
+/* ----------------------------- достижения ----------------------------- */
+const sumDays = f => Object.values(S.days).reduce((a, d) => a + (d[f] || 0), 0);
+const ACH = [
+  ['🏃', 'Первый шаг', 'Выполни первое упражнение', () => S.workouts.length >= 1], ['🏋️', 'Разогрев', '10 упражнений', () => S.workouts.length >= 10],
+  ['🦾', 'Железный', '50 упражнений', () => S.workouts.length >= 50], ['🏆', 'Машина', '200 упражнений', () => S.workouts.length >= 200],
+  ['👟', '10 000 шагов', 'За один день', () => Object.values(S.days).some(d => d.steps >= 10000)], ['🥾', '100 000 шагов', 'Всего', () => sumDays('steps') >= 100000],
+  ['📚', 'Книжный червь', '300 минут чтения', () => sumDays('read') >= 300], ['📖', 'Библиотекарь', '1500 минут чтения', () => sumDays('read') >= 1500],
+  ['🥗', 'Учёт питания', '10 приёмов пищи', () => S.meals.length >= 10], ['💧', 'Водяной', '8 стаканов за день', () => Object.values(S.days).some(d => d.water >= 8)],
+  ['⭐', 'Уровень 10', 'Достигни 10 уровня', () => levelInfo(S.xp).level >= 10], ['🌟', 'Уровень 50', 'Открой 2-го героя', () => levelInfo(S.xp).level >= 50],
+  ['💫', 'Уровень 100', 'Сотка!', () => levelInfo(S.xp).level >= 100], ['🔥', 'Серия 7 дней', '7 дней подряд', () => streak() >= 7],
+  ['🌋', 'Серия 30 дней', '30 дней подряд', () => streak() >= 30], ['🪙', 'Богач', 'Накопи 1000 монет', () => S.coins >= 1000],
+  ['🛍️', 'Шопоголик', 'Купи 5 наград', () => (S.bought | 0) >= 5], ['📝', 'Дневник', 'Напиши 5 заметок', () => Object.keys(S.notes).filter(k => S.notes[k]).length >= 5],
+];
+function checkAch() {
+  ACH.forEach((a, i) => { if (!S.ach[i] && a[3]()) { S.ach[i] = dateKey(); gain(100, 50, '🏅 ' + a[1]); } });
+}
+function streak() {
+  let n = 0, d = new Date();
+  if (!(S.days[dateKey(d)]?.xp > 0)) d.setDate(d.getDate() - 1);
+  while (S.days[dateKey(d)]?.xp > 0) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+
+/* ------------------------------ UI: вкладки ------------------------------ */
+const TABS = [['home', '🏠', 'Главная'], ['steps', '👟', 'Шаги'], ['train', '🏋️', 'Силовые'], ['read', '📖', 'Чтение'], ['food', '🍽️', 'Еда'], ['shop', '🛒', 'Магазин'], ['more', '⚙️', 'Ещё']];
+let tab = 'home', trainG = 'Все', trainE = 'Все', pendingPhoto = null;
+
+function render() {
+  document.documentElement.dataset.theme = S.settings.theme;
+  const li = levelInfo(S.xp);
+  $('#hLvl').textContent = 'Ур. ' + li.level; $('#hCoins').textContent = '🪙 ' + S.coins;
+  $('#nav').innerHTML = TABS.map(t => `<button class="${t[0] === tab ? 'on' : ''}" data-act="nav" data-t="${t[0]}"><span>${t[1]}</span>${t[2]}</button>`).join('');
+  const views = { home: vHome, steps: vSteps, train: vTrain, read: vRead, food: vFood, shop: vShop, more: vMore };
+  const active = document.activeElement;
+  if (active && /INPUT|TEXTAREA|SELECT/.test(active.tagName) && $('#view').contains(active)) { return; } // не сбиваем ввод
+  $('#view').innerHTML = views[tab]();
+  if (tab === 'read') tickDisplay();
+}
+
+function vHome() {
+  checkAuto(); checkAch();
+  const li = levelInfo(S.xp), d = peek(), qs = todayQuests(), qd = S.quests[dateKey()] || {};
+  const done = qs.filter(q => qd[q.id]).length, pct = li.cur / li.next * 100;
+  const nextU = UNL.find(u => u > li.level);
+  const ch = CHARS[S.active] || CHARS[0];
+  const phr = done === 0 ? rnd(PHRASES.low) : done < qs.length ? rnd(PHRASES.mid) : rnd(PHRASES.high);
+  const bonus = S.lastBonus !== dateKey();
+  return `
+  <div class="card">
+    <div class="hero">
+      <div class="avatar">${charImg(S.active)}</div>
+      <div class="grow">
+        <div class="mut">${esc(S.name)} · ${esc(ch[0])}, ${esc(ch[1])}</div>
+        <div class="lvl">Уровень ${li.level}</div>
+        <div class="bar"><i style="width:${pct}%"></i></div>
+        <div class="mut">${li.cur} / ${li.next} XP ${nextU ? `· новый персонаж на ур. ${nextU}` : ''}</div>
+        <div class="bubble">💬 ${phr}</div>
+      </div>
+    </div>
+    <div class="row between wrap" style="margin-top:12px">
+      <span class="chip">🔥 Серия: ${streak()} дн.</span>
+      <button class="gold" data-act="bonus" ${bonus ? '' : 'disabled'}>${bonus ? '🎁 Ежедневный бонус' : '✅ Бонус получен'}</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row between"><h2>📜 Квесты на сегодня</h2><span class="chip">${done}/${qs.length}</span></div>
+    ${qs.map(q => `<div class="item ${qd[q.id] ? 'done' : ''}" ${q.auto ? '' : `data-act="quest" data-id="${q.id}"`}>
+      <div class="chk">${qd[q.id] ? '✓' : ''}</div>
+      <div class="grow"><div class="t">${esc(q.t)}</div>${q.auto ? `<div class="mut">авто · ${Math.min(metric[q.auto.k](dateKey()), q.auto.v)} / ${q.auto.v}</div>` : '<div class="mut">нажми, когда выполнишь</div>'}</div>
+      <div class="rew">+${q.xp} XP<br>+${q.c} 🪙</div></div>`).join('')}
+    <p class="mut">Квесты обновляются каждый день. Авто-квесты засчитываются сами.</p>
+  </div>
+  <div class="card"><h3>📊 Сегодня</h3>
+    <div class="macro"><div><b>${(d.steps || 0).toLocaleString('ru')}</b><span class="mut">шагов</span></div><div><b>${d.train || 0}</b><span class="mut">упражн.</span></div>
+    <div><b>${d.read || 0}</b><span class="mut">мин чтения</span></div><div><b>${d.water || 0}</b><span class="mut">воды</span></div></div></div>`;
+}
+
+function vSteps() {
+  const d = peek(), steps = d.steps || 0, goal = S.stepGoal, p = Math.min(1, steps / goal), R = 84, C = 2 * Math.PI * R;
+  const days = [...Array(7)].map((_, i) => { const x = new Date(); x.setDate(x.getDate() - 6 + i); return { l: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'][x.getDay()], v: peek(dateKey(x)).steps || 0 }; });
+  const mx = Math.max(goal, ...days.map(x => x.v));
+  return `
+  <div class="card center"><h2>👟 Шагомер</h2>
+    <div class="ring"><svg width="200" height="200"><circle cx="100" cy="100" r="${R}" stroke="var(--card2)" stroke-width="16" fill="none"/>
+      <circle cx="100" cy="100" r="${R}" stroke="var(--acc2)" stroke-width="16" fill="none" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - p)}"/></svg>
+      <div class="in"><div class="n" id="stepN">${steps.toLocaleString('ru')}</div><div class="mut">из ${goal.toLocaleString('ru')}</div></div></div>
+    <p class="mut">≈ ${(steps * 0.0007).toFixed(2)} км · ≈ ${Math.round(steps * 0.04)} ккал · ${CFG.stepXp} шагов = 1 XP, ${CFG.stepCoin} шагов = 1 🪙</p>
+    <div class="row wrap" style="justify-content:center"><button class="sec" data-act="steps" data-n="500">+500</button><button class="sec" data-act="steps" data-n="1000">+1000</button><button class="sec" data-act="steps" data-n="2000">+2000</button></div>
+    <div class="row" style="margin-top:10px"><input id="stepCustom" type="number" inputmode="numeric" placeholder="Своё число шагов"><button data-act="stepsCustom">Добавить</button></div>
+    <div style="margin-top:12px"><button class="${pedo.on ? 'bad' : 'ok'}" data-act="sensor">${pedo.on ? '⏹ Выключить датчик движения' : '📡 Считать шаги датчиком телефона'}</button>
+    <p class="mut">Датчик работает на телефоне, пока страница открыта и экран включён. Точность приблизительная — можно сверять с Health / Google Fit и добавлять вручную.</p></div>
+  </div>
+  <div class="card"><h3>Последние 7 дней</h3><div class="bars">${days.map(x => `<div><b style="height:${x.v / mx * 90}px"></b>${x.l}<br>${x.v ? (x.v / 1000).toFixed(1) + 'k' : '—'}</div>`).join('')}</div></div>`;
+}
+
+function vTrain() {
+  const groups = ['Все', ...new Set(EXR.map(e => e.g))], eqs = ['Все', 'Гантели', 'Свой вес'];
+  const list = EXR.filter(e => (trainG === 'Все' || e.g === trainG) && (trainE === 'Все' || e.eq === trainE));
+  const hist = S.workouts.slice(-8).reverse();
+  return `
+  <div class="card"><h2>🔥 Готовые программы</h2>
+    ${PROGRAMS.map((p, i) => `<div class="item"><div class="grow"><b>${p[0]}</b><div class="mut">${p[1].length} упражнений · бонус за всю программу</div></div><button class="sm" data-act="prog" data-i="${i}">Выполнил</button></div>`).join('')}
+  </div>
+  <div class="card"><h3>⏱ Таймер отдыха</h3><div class="timer" id="restT" style="font-size:44px">${restLeft ? restLeft + ' c' : '—'}</div>
+    <div class="row" style="justify-content:center">${[30, 60, 90, 120].map(s => `<button class="sec sm" data-act="rest" data-s="${s}">${s} c</button>`).join('')}</div></div>
+  <div class="card"><h2>💪 Упражнения (${list.length})</h2>
+    <div class="row wrap" style="margin-bottom:8px">${eqs.map(e => `<button class="chipbtn ${e === trainE ? 'on' : ''}" data-act="fe" data-v="${e}">${e}</button>`).join('')}</div>
+    <div class="row wrap" style="margin-bottom:12px">${groups.map(g => `<button class="chipbtn ${g === trainG ? 'on' : ''}" data-act="fg" data-v="${g}">${g}</button>`).join('')}</div>
+    ${list.map(e => `<div class="ex" data-id="${e.id}"><div class="row between"><span class="nm">${esc(e.n)}</span><span class="rew">+${e.xp} XP / подход</span></div>
+      <div class="mut"><span class="tag">${e.g}</span> <span class="tag">${e.eq}</span></div>
+      <div class="inp"><input class="eS" type="number" value="${e.sets}" min="1" inputmode="numeric"><span class="mut">×</span><input class="eR" type="number" value="${e.reps}" min="1" inputmode="numeric"><span class="mut">${e.unit}</span>
+      <span class="grow"></span><button class="sm ok" data-act="logEx">Готово</button></div></div>`).join('')}
+  </div>
+  <div class="card"><h3>🗒 Последние записи</h3>${hist.length ? hist.map(w => `<div class="item"><div class="grow">${esc(EXR[w.id]?.n || '?')}<div class="mut">${w.date} · ${w.sets} × ${w.reps}</div></div><span class="rew">+${w.xp} XP</span></div>`).join('') : '<p class="mut">Пока пусто — самое время начать!</p>'}</div>`;
+}
+
+const rt = { min: 25, left: 25 * 60, run: false, end: 0, iv: null };
+function vRead() {
+  const hist = S.reading.slice(-8).reverse();
+  return `
+  <div class="card center"><h2>📖 Время читать</h2>
+    <div class="timer" id="rtime">25:00</div>
+    <div class="row" style="justify-content:center;margin:8px 0"><select id="rmin" style="width:auto" data-chg="rmin">${[10, 15, 25, 30, 45, 60].map(m => `<option value="${m}" ${m === rt.min ? 'selected' : ''}>${m} мин</option>`).join('')}</select></div>
+    <input id="rbook" placeholder="Какую книгу читаешь?" style="margin-bottom:10px">
+    <div class="row" style="justify-content:center"><button class="ok" data-act="rStart">▶ Старт</button><button class="sec" data-act="rPause">⏸ Пауза</button><button class="sec" data-act="rReset">↺ Сброс</button></div>
+    <p class="mut">Награда: 2 XP за минуту + 1 🪙 за каждые 5 минут. Держи страницу открытой.</p></div>
+  <div class="card"><h3>➕ Добавить вручную</h3><div class="row"><input id="rmanMin" type="number" placeholder="Минут" inputmode="numeric"><input id="rmanPg" type="number" placeholder="Страниц" inputmode="numeric"><button data-act="rManual">Ок</button></div></div>
+  <div class="card"><h3>История</h3>${hist.length ? hist.map(r => `<div class="item"><div class="grow">${esc(r.title || 'Чтение')}<div class="mut">${r.date}${r.pages ? ' · ' + r.pages + ' стр.' : ''}</div></div><span class="rew">${r.min} мин</span></div>`).join('') : '<p class="mut">Пока записей нет.</p>'}</div>`;
+}
+function tickDisplay() { const e = $('#rtime'); if (e) e.textContent = pad(Math.floor(rt.left / 60)) + ':' + pad(rt.left % 60); }
+function rStart() {
+  if (rt.run) return; if (rt.left <= 0) rt.left = rt.min * 60;
+  rt.end = Date.now() + rt.left * 1000; rt.run = true;
+  rt.iv = setInterval(() => {
+    rt.left = Math.max(0, Math.round((rt.end - Date.now()) / 1000)); tickDisplay();
+    if (rt.left <= 0) rFinish();
+  }, 500);
+}
+function rPause() { if (!rt.run) return; clearInterval(rt.iv); rt.run = false; rt.left = Math.max(0, Math.round((rt.end - Date.now()) / 1000)); tickDisplay(); }
+function rReset() { clearInterval(rt.iv); rt.run = false; rt.left = rt.min * 60; tickDisplay(); }
+function rFinish() {
+  clearInterval(rt.iv); rt.run = false; beep();
+  const title = ($('#rbook')?.value || '').trim();
+  S.reading.push({ date: dateKey(), min: rt.min, title, pages: 0 }); D().read += rt.min;
+  rt.left = rt.min * 60; gain(rt.min * 2, Math.floor(rt.min / 5), 'чтение завершено');
+}
+
+let nf = { active: '' };
+function vFood() {
+  const k = dateKey(), ms = S.meals.filter(m => m.date === k);
+  const t = ms.reduce((a, m) => ({ kcal: a.kcal + m.kcal, p: a.p + m.p, f: a.f + m.f, c: a.c + m.c }), { kcal: 0, p: 0, f: 0, c: 0 });
+  const g = S.goals, pc = (a, b) => Math.min(100, a / b * 100);
+  return `
+  <div class="card"><h2>🍽️ Рацион сегодня</h2>
+    <div class="macro"><div><b>${Math.round(t.kcal)}</b><span class="mut">ккал</span></div><div><b>${t.p.toFixed(0)}</b><span class="mut">белки</span></div><div><b>${t.f.toFixed(0)}</b><span class="mut">жиры</span></div><div><b>${t.c.toFixed(0)}</b><span class="mut">углеводы</span></div></div>
+    <label>Калории ${Math.round(t.kcal)} / ${g.kcal}</label><div class="bar ${t.kcal > g.kcal ? 'red' : ''}"><i style="width:${pc(t.kcal, g.kcal)}%"></i></div>
+    <label>Белки ${t.p.toFixed(0)} / ${g.p} г</label><div class="bar"><i style="width:${pc(t.p, g.p)}%"></i></div>
+    <label>Жиры ${t.f.toFixed(0)} / ${g.f} г</label><div class="bar gold"><i style="width:${pc(t.f, g.f)}%"></i></div>
+    <label>Углеводы ${t.c.toFixed(0)} / ${g.c} г</label><div class="bar"><i style="width:${pc(t.c, g.c)}%"></i></div></div>
+  <div class="card"><h3>➕ Добавить приём пищи</h3>
+    <div class="row"><button class="sec grow" data-act="photo">📷 Фото еды</button><button class="sec grow" data-act="recognize">🤖 Определить по фото</button></div>
+    <div id="pprev" class="mut" style="margin:8px 0">${pendingPhoto ? `<img src="${pendingPhoto}" style="max-width:100%;max-height:180px;border-radius:12px">` : ''}</div>
+    <label>Продукт (начни вводить — подставятся КБЖУ из базы)</label><input id="fName" list="foodList" placeholder="Например: Гречка варёная"><datalist id="foodList">${Object.keys(FOOD).map(n => `<option value="${n}">`).join('')}</datalist>
+    <label>Вес, г</label><input id="fGr" type="number" inputmode="numeric" placeholder="100">
+    <div class="grid2"><div><label>Ккал</label><input id="fKcal" type="number" inputmode="decimal"></div><div><label>Белки, г</label><input id="fP" type="number" inputmode="decimal"></div>
+    <div><label>Жиры, г</label><input id="fF" type="number" inputmode="decimal"></div><div><label>Углеводы, г</label><input id="fC" type="number" inputmode="decimal"></div></div>
+    <button class="ok" style="width:100%;margin-top:12px" data-act="mealAdd">Записать (+5 XP)</button>
+    <p class="mut">Данные в базе приблизительные. Автоопределение по фото работает после подключения ИИ-сервиса: «Ещё → Настройки».</p></div>
+  <div class="card"><h3>Сегодняшние записи</h3>${ms.length ? ms.map(m => `<div class="meal">${m.img ? `<img src="${m.img}">` : '<div style="font-size:30px">🍴</div>'}<div class="grow"><b>${esc(m.name)}</b>${m.g ? ` · ${m.g} г` : ''}<div class="mut">${Math.round(m.kcal)} ккал · Б ${m.p.toFixed(0)} · Ж ${m.f.toFixed(0)} · У ${m.c.toFixed(0)}</div></div><button class="sm sec" data-act="mealDel" data-id="${m.id}">✕</button></div>`).join('') : '<p class="mut">Пока ничего не записано.</p>'}</div>`;
+}
+
+function vShop() {
+  const items = [...SHOP, ...S.customShop];
+  const inv = Object.entries(S.inventory).filter(([, n]) => n > 0);
+  return `
+  <div class="card"><h2>🛒 Магазин наград</h2><p class="mut">Баланс: <b style="color:var(--gold)">${S.coins} 🪙</b></p>
+    <div class="grid">${items.map(i => `<div class="shopitem"><div class="em">${i.em}</div><b>${esc(i.n)}</b><div class="price">${i.p} 🪙</div><button class="gold sm" data-act="buy" data-id="${i.id}" ${S.coins < i.p ? 'disabled' : ''}>Купить</button></div>`).join('')}</div></div>
+  <div class="card"><h3>🎒 Инвентарь</h3>${inv.length ? inv.map(([id, n]) => { const it = items.find(x => x.id === id) || { em: '🎁', n: id }; return `<div class="item"><div style="font-size:28px">${it.em}</div><div class="grow"><b>${esc(it.n)}</b><div class="mut">×${n}</div></div><button class="sm ok" data-act="use" data-id="${id}">Использовать</button></div>`; }).join('') : '<p class="mut">Пусто — заработай монеты и купи что-нибудь вкусное!</p>'}</div>
+  <div class="card"><h3>➕ Своя награда</h3><div class="row"><input id="sEm" placeholder="🎁" style="width:64px"><input id="sNm" placeholder="Название"><input id="sPr" type="number" placeholder="Цена" style="width:90px"></div><button style="margin-top:10px;width:100%" data-act="addReward">Добавить в магазин</button></div>`;
+}
+
+function vMore() {
+  const k = dateKey(), d = peek(), li = levelInfo(S.xp), uc = unlockedCount(li.level);
+  const w = S.weights.slice(-12);
+  let chart = '';
+  if (w.length > 1) {
+    const vs = w.map(x => x.v), mn = Math.min(...vs) - 1, mx = Math.max(...vs) + 1;
+    const pts = w.map((x, i) => `${10 + i * (280 / (w.length - 1))},${90 - (x.v - mn) / (mx - mn) * 80}`).join(' ');
+    chart = `<svg viewBox="0 0 300 100" style="width:100%"><polyline points="${pts}" fill="none" stroke="var(--acc2)" stroke-width="3"/>${w.map((x, i) => `<circle cx="${10 + i * (280 / (w.length - 1))}" cy="${90 - (x.v - mn) / (mx - mn) * 80}" r="3.5" fill="var(--acc)"/>`).join('')}</svg>`;
+  }
+  const tw = sumDays('steps'), wc = S.workouts.length, rm = sumDays('read');
+  return `
+  <div class="card"><h2>🦸 Персонажи (${uc}/${CHARS.length})</h2><p class="mut">Герои и демоны открываются по мере прокачки. Нажми на открытого персонажа, чтобы выбрать.</p>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(96px,1fr))">${CHARS.map((c, i) => `<div class="charcard ${i === S.active ? 'on' : ''} ${i >= uc ? 'lock' : ''}" ${i < uc ? `data-act="pick" data-i="${i}"` : ''}><div class="avatar">${i < uc ? charImg(i) : '<div style="font-size:34px;align-self:center">🔒</div>'}</div><b>${i < uc ? esc(c[0]) : 'ур. ' + UNL[i]}</b></div>`).join('')}</div>
+    <div class="row" style="margin-top:12px"><button class="sec grow" data-act="uploadImg">🖼 Своя картинка для героя «${esc(CHARS[S.active][0])}»</button>${S.customImg[S.active] ? '<button class="sec" data-act="delImg">Убрать</button>' : ''}</div></div>
+  <div class="card"><h3>💧 Вода</h3><div class="row wrap">${[...Array(8)].map((_, i) => `<span style="font-size:28px;opacity:${i < (d.water || 0) ? 1 : .25}">🥤</span>`).join('')}<span class="grow"></span><button class="sm" data-act="water">+ стакан</button></div></div>
+  <div class="card"><h3>😴 Сон</h3><div class="row"><input id="slp" type="number" step="0.5" placeholder="Сколько часов спал(а)" value="${d.sleep || ''}"><button data-act="sleep">Записать</button></div></div>
+  <div class="card"><h3>⚖️ Вес</h3><div class="row"><input id="wt" type="number" step="0.1" placeholder="кг"><button data-act="weight">Записать</button></div>${chart}${w.length ? `<p class="mut">Последний: ${w[w.length - 1].v} кг (${w[w.length - 1].date})</p>` : ''}</div>
+  <div class="card"><h3>📝 Дневник / комментарий дня</h3><textarea id="note" placeholder="Как прошёл день? Что получилось, что нет?">${esc(S.notes[k] || '')}</textarea><button style="margin-top:8px" data-act="note">Сохранить (+10 XP раз в день)</button></div>
+  <div class="card"><h3>🏅 Достижения (${Object.keys(S.ach).length}/${ACH.length})</h3><div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(105px,1fr))">${ACH.map((a, i) => `<div class="ach ${S.ach[i] ? '' : 'lock'}"><div class="em">${a[0]}</div><b>${a[1]}</b><div class="mut">${a[2]}</div></div>`).join('')}</div></div>
+  <div class="card"><h3>📈 Статистика</h3><div class="macro" style="grid-template-columns:repeat(2,1fr)"><div><b>${tw.toLocaleString('ru')}</b><span class="mut">шагов всего</span></div><div><b>${wc}</b><span class="mut">упражнений</span></div><div><b>${rm}</b><span class="mut">минут чтения</span></div><div><b>${S.xp.toLocaleString('ru')}</b><span class="mut">XP всего</span></div></div></div>
+  <div class="card"><h3>⚙️ Настройки</h3>
+    <label>Имя</label><input id="sName" value="${esc(S.name)}">
+    <label>Цель шагов в день</label><input id="sGoal" type="number" value="${S.stepGoal}">
+    <div class="grid2"><div><label>Цель ккал</label><input id="gK" type="number" value="${S.goals.kcal}"></div><div><label>Белки, г</label><input id="gP" type="number" value="${S.goals.p}"></div><div><label>Жиры, г</label><input id="gF" type="number" value="${S.goals.f}"></div><div><label>Углеводы, г</label><input id="gC" type="number" value="${S.goals.c}"></div></div>
+    <label>URL сервиса распознавания еды (необязательно)</label><input id="sApi" value="${esc(S.settings.apiUrl)}" placeholder="https://...">
+    <div class="row wrap" style="margin-top:12px"><button data-act="saveSet">Сохранить</button><button class="sec" data-act="theme">${S.settings.theme === 'dark' ? '☀️ Светлая' : '🌙 Тёмная'} тема</button></div>
+    <div class="row wrap" style="margin-top:10px"><button class="sec" data-act="export">⬇ Экспорт данных</button><button class="sec" data-act="import">⬆ Импорт</button><button class="bad" data-act="reset">Сбросить всё</button></div></div>`;
+}
+
+/* ------------------------- пошаговый датчик ------------------------- */
+const pedo = { on: false, buf: 0, last: 0, f: 9.8, iv: null };
+function onMotion(e) {
+  const a = e.accelerationIncludingGravity; if (!a) return;
+  const m = Math.sqrt((a.x || 0) ** 2 + (a.y || 0) ** 2 + (a.z || 0) ** 2), now = Date.now();
+  pedo.f = pedo.f * 0.9 + m * 0.1;
+  if (m - pedo.f > 2.2 && now - pedo.last > 330) { pedo.last = now; pedo.buf++; }
+}
+async function sensorToggle() {
+  if (pedo.on) { window.removeEventListener('devicemotion', onMotion); clearInterval(pedo.iv); pedo.on = false; return render(); }
+  try {
+    if (typeof DeviceMotionEvent !== 'undefined' && DeviceMotionEvent.requestPermission) {
+      const r = await DeviceMotionEvent.requestPermission(); if (r !== 'granted') return toast('Доступ к датчикам не выдан');
+    }
+    if (!('DeviceMotionEvent' in window)) return toast('Датчики не поддерживаются на этом устройстве');
+    window.addEventListener('devicemotion', onMotion); pedo.on = true;
+    pedo.iv = setInterval(() => { if (pedo.buf > 0) { const n = pedo.buf; pedo.buf = 0; addSteps(n, true); } }, 4000);
+    render(); toast('Шагомер включён 👟');
+  } catch (e) { toast('Не удалось включить датчик (нужен HTTPS и телефон)'); }
+}
+function addSteps(n, quiet = false) {
+  const d = D(); d.steps += n;
+  const bx = Math.floor(d.steps / CFG.stepXp), bc = Math.floor(d.steps / CFG.stepCoin);
+  const dx = bx - d.sx, dc = bc - d.sc; d.sx = bx; d.sc = bc;
+  if (dx > 0 || dc > 0) gain(dx, dc, `${n} шагов`, quiet); else { save(); render(); }
+}
+
+/* ------------------------------ отдых ------------------------------ */
+let restLeft = 0, restIv = null;
+function rest(s) {
+  clearInterval(restIv); restLeft = s;
+  restIv = setInterval(() => { restLeft--; const e = $('#restT'); if (e) e.textContent = restLeft > 0 ? restLeft + ' c' : '—'; if (restLeft <= 0) { clearInterval(restIv); beep(); toast('Отдых окончен — вперёд! 💥'); } }, 1000);
+}
+
+/* ------------------------------ картинки ------------------------------ */
+function resizeImg(file, max, cb) {
+  const r = new FileReader();
+  r.onload = () => { const im = new Image(); im.onload = () => { const k = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = im.width * k; c.height = im.height * k; c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); cb(c.toDataURL('image/jpeg', 0.7)); }; im.src = r.result; };
+  r.readAsDataURL(file);
+}
+async function recognize() {
+  if (!pendingPhoto) return toast('Сначала сделай фото');
+  if (!S.settings.apiUrl) return toast('Подключи сервис распознавания в «Ещё → Настройки», пока — заполни вручную или выбери из базы');
+  try {
+    // Ожидаемый ответ сервиса: { name, kcal, p, f, c }
+    const r = await fetch(S.settings.apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: pendingPhoto }) });
+    const j = await r.json();
+    $('#fName').value = j.name || ''; $('#fKcal').value = j.kcal || ''; $('#fP').value = j.p || ''; $('#fF').value = j.f || ''; $('#fC').value = j.c || '';
+    toast('Распознано — проверь значения');
+  } catch (e) { toast('Не удалось распознать фото'); }
+}
+function fillFood() {
+  const f = FOOD[$('#fName')?.value]; if (!f) return;
+  const g = num($('#fGr').value) || 100, k = g / 100;
+  $('#fKcal').value = Math.round(f[0] * k); $('#fP').value = (f[1] * k).toFixed(1); $('#fF').value = (f[2] * k).toFixed(1); $('#fC').value = (f[3] * k).toFixed(1);
+}
+
+/* ------------------------------ действия ------------------------------ */
+const A = {
+  nav: b => { tab = b.t; render(); window.scrollTo(0, 0); },
+  close: () => $('#modal').classList.add('hidden'),
+  bonus: () => { const s = streak(); S.lastBonus = dateKey(); gain(20, 10 + Math.min(s, 30) * 2, 'ежедневный бонус'); },
+  quest: b => { const k = dateKey(), q = QUESTS[+b.id]; S.quests[k] = S.quests[k] || {}; if (S.quests[k][q.id]) return; S.quests[k][q.id] = 1; gain(q.xp, q.c, 'квест выполнен'); },
+  steps: b => addSteps(+b.n),
+  stepsCustom: () => { const n = Math.round(num($('#stepCustom').value)); if (n > 0) addSteps(n); },
+  sensor: sensorToggle,
+  fg: b => { trainG = b.v; render(); }, fe: b => { trainE = b.v; render(); },
+  logEx: (b, el) => {
+    const card = el.closest('.ex'), e = EXR[+card.dataset.id], sets = Math.max(1, Math.round(num($('.eS', card).value))), reps = Math.max(1, Math.round(num($('.eR', card).value)));
+    S.workouts.push({ date: dateKey(), id: e.id, sets, reps, xp: e.xp * sets }); D().train++; gain(e.xp * sets, Math.ceil(sets / 2), e.n);
+  },
+  prog: b => {
+    const p = PROGRAMS[+b.i]; let xp = 0, n = 0;
+    p[1].forEach(nm => { const e = exByName(nm); if (e) { S.workouts.push({ date: dateKey(), id: e.id, sets: e.sets, reps: e.reps, xp: e.xp * e.sets }); xp += e.xp * e.sets; n++; D().train++; } });
+    gain(xp + 50, 10 + n * 2, 'программа выполнена');
+  },
+  rest: b => rest(+b.s),
+  rStart, rPause, rReset,
+  rManual: () => {
+    const m = Math.round(num($('#rmanMin').value)), pg = Math.round(num($('#rmanPg').value));
+    if (m <= 0) return toast('Укажи минуты');
+    S.reading.push({ date: dateKey(), min: m, title: ($('#rbook')?.value || '').trim(), pages: pg }); D().read += m; gain(m * 2, Math.floor(m / 5), 'чтение');
+  },
+  photo: () => $('#mealPhoto').click(), recognize,
+  mealAdd: () => {
+    const name = $('#fName').value.trim(); if (!name) return toast('Введи название');
+    const m = { id: Date.now(), date: dateKey(), name, g: num($('#fGr').value), kcal: num($('#fKcal').value), p: num($('#fP').value), f: num($('#fF').value), c: num($('#fC').value), img: pendingPhoto };
+    S.meals.push(m); D().meals++; pendingPhoto = null; gain(5, 1, 'приём пищи записан');
+  },
+  mealDel: b => { S.meals = S.meals.filter(m => m.id !== +b.id); save(); render(); },
+  buy: b => { const it = [...SHOP, ...S.customShop].find(x => x.id === b.id); if (!it || S.coins < it.p) return; S.coins -= it.p; S.inventory[it.id] = (S.inventory[it.id] || 0) + 1; S.bought = (S.bought | 0) + 1; toast('Куплено: ' + it.n); save(); render(); },
+  use: b => { if (!(S.inventory[b.id] > 0)) return; S.inventory[b.id]--; toast('Наслаждайся! Ты это заслужил(а) 🎉'); save(); render(); },
+  addReward: () => {
+    const n = $('#sNm').value.trim(), p = Math.round(num($('#sPr').value)); if (!n || p <= 0) return toast('Название и цена');
+    S.customShop.push({ id: 'c' + Date.now(), em: $('#sEm').value.trim() || '🎁', n, p }); save(); render();
+  },
+  water: () => { const d = D(); d.water++; gain(3, 0, 'стакан воды'); },
+  sleep: () => { const h = num($('#slp').value); if (h <= 0) return; const d = D(), first = !d.sleep; d.sleep = h; if (first) gain(h >= 7 ? 15 : 5, 0, 'сон записан'); else { save(); render(); } },
+  weight: () => { const v = num($('#wt').value); if (v <= 0) return; S.weights.push({ date: dateKey(), v }); gain(5, 0, 'вес записан'); },
+  note: () => { const k = dateKey(), t = $('#note').value.trim(), first = !S.notes[k]; S.notes[k] = t; if (first && t) gain(10, 1, 'заметка дня'); else { save(); toast('Сохранено'); } },
+  pick: b => { S.active = +b.i; save(); render(); },
+  uploadImg: () => $('#charImg').click(), delImg: () => { delete S.customImg[S.active]; save(); render(); },
+  saveSet: () => {
+    S.name = $('#sName').value.trim() || 'Герой'; S.stepGoal = Math.max(1000, Math.round(num($('#sGoal').value)) || 8000);
+    S.goals = { kcal: num($('#gK').value) || 2200, p: num($('#gP').value) || 130, f: num($('#gF').value) || 70, c: num($('#gC').value) || 250 };
+    S.settings.apiUrl = $('#sApi').value.trim(); save(); toast('Настройки сохранены'); document.activeElement.blur(); render();
+  },
+  theme: () => { S.settings.theme = S.settings.theme === 'dark' ? 'light' : 'dark'; save(); render(); },
+  export: () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(S)], { type: 'application/json' })); a.download = `fitquest-${dateKey()}.json`; a.click(); },
+  import: () => $('#importFile').click(),
+  reset: () => { if (confirm('Удалить весь прогресс? Это нельзя отменить.')) { localStorage.removeItem(KEY); S = defaults(); render(); } },
+};
+document.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (b && A[b.dataset.act]) A[b.dataset.act](b.dataset, b); });
+document.addEventListener('input', e => { if (e.target.id === 'fName' || e.target.id === 'fGr') fillFood(); });
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'rmin') { rt.min = +t.value; if (!rt.run) { rt.left = rt.min * 60; tickDisplay(); } }
+  if (t.id === 'mealPhoto' && t.files[0]) resizeImg(t.files[0], 480, url => { pendingPhoto = url; $('#pprev').innerHTML = `<img src="${url}" style="max-width:100%;max-height:180px;border-radius:12px">`; toast('Фото добавлено'); });
+  if (t.id === 'charImg' && t.files[0]) resizeImg(t.files[0], 420, url => { S.customImg[S.active] = url; save(); render(); });
+  if (t.id === 'importFile' && t.files[0]) {
+    const r = new FileReader(); r.onload = () => { try { S = Object.assign(defaults(), JSON.parse(r.result)); save(); render(); toast('Данные импортированы'); } catch (x) { toast('Не удалось прочитать файл'); } }; r.readAsText(t.files[0]);
+  }
+  t.value && /^(mealPhoto|charImg|importFile)$/.test(t.id) && (t.value = '');
+});
+document.addEventListener('focusout', () => setTimeout(() => { if (!document.activeElement || document.activeElement === document.body) render(); }, 50));
+
+render();
+
+</script>
+</body>
+</html>
